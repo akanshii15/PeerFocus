@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerFocus</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/socket.io.js" defer></script>
+    <script src="/js/main.js" defer></script>
+</head>
+<body>
+    <main class="main-container">
+        <aside class="caller-list-wrapper">
+            <h1 class="caller-list-heading h-font">Contacts</h1>
+            <ul id="allusers" class="caller-list"></ul>
+        </aside>
+
+        <section class="video-call-container">
+            <div class="username-input">
+                <input id="username" type="text" placeholder="Enter Your Username"><button id="create-user">Join</button>
+            </div>
+            <div class="video-streams">
+                <div class="local-video">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                </div>
+                <div class="remote-video">
+                    <video id="remoteVideo" autoplay muted playsinline></video>
+                </div>
+            </div>
+
+            <div class="call-management-bar">
+                <button id="toggle-video-btn" class="control-btn video-toggle-btn">
+                    <img src="/images/video-on.png" alt="Toggle Video">
+                </button>
+                <button id="toggle-audio-btn" class="control-btn audio-toggle-btn">
+                    <img src="/images/mic-on.png" alt="Toggle Audio">
+                </button>
+
+                <div class="pomodoro-timer-section">
+                    <button id="toggle-pomodoro-btn" class="control-btn">
+                        <img src="/images/timer.png" alt="Pomodoro Timer">
+                    </button>
+                   <div id="pomodoro-panel" class="pomodoro-panel">
+                        <input type="number" id="study-minutes" placeholder="Study (min)" min="1" max="90" value="25" />
+                        <input type="number" id="break-minutes" placeholder="Break (min)" min="1" max="30" value="5" />
+                        <button id="start-timer" class="timer-btn">Start</button>
+                        <button id="reset-timer" class="timer-btn">Reset</button>
+                        <h2 id="timer-display" class="timer-display">25:00</h2>
+                        <div id="pomodoro-label" class="text-xl font-semibold">Focus Time</div>
+                    </div>
+                </div>
+<button id="show-contacts-btn" class="control-btn show-contacts-btn">
+                    <img src="/images/contacts.png" alt="Show Contacts">
+                </button>
+                <button id="end-call-btn" class="call call-disconnect d-none">
+                    <img src="/images/phone-disconnect.png" alt="End Call">
+                </button>
+
+                
+            </div>
+            <div id="pomodoro-box" class="fixed top-5 right-5 p-4 rounded-xl shadow-lg text-center text-white z-50">
+                <div id="pomodoro-label-box" class="text-xl font-semibold">Focus Time</div>
+                <div id="pomodoro-timer-box" class="text-3xl mt-1 font-bold">25:00</div>
+            </div>
+
+        </section>
+    </main>
+
+    <div id="confetti-container" class="confetti-container"></div>
+</body>
+</html>
