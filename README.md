@@ -1,2 +1,3 @@
 # PeerFocus
-NexusConnect is a real-time video conferencing app for focused study and collaboration. It features an integrated Pomodoro timer for efficient work-break cycles, visual mic/camera status, and user presence display. The app notifies users of session transitions and adjusts mic status to facilitate structured study.
+PeerFocus is a browser-based video conferencing tool tailored for deep work. With built-in Pomodoro timing, auto mic control, and live presence indicators, it keeps sessions structured and focused.
+
