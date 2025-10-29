@@ -86,8 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
             pc.ontrack = function (event) {
                 if (remoteVideo.srcObject !== event.streams[0]) {
                     remoteVideo.srcObject = event.streams[0];
+<<<<<<< HEAD
                     remoteVideo.muted = false;
                     remoteVideo.volume = 1.0;
+=======
+>>>>>>> 7eea2aa0baadb23a58ece8eb2849dc10ac933080
                     console.log('Remote stream attached to remoteVideo:', event.streams[0]);
                 }
             };
