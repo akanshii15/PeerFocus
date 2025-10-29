@@ -1,0 +1,653 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* ------------------------------------- */
+/* Global Reset and Base Styles */
+/* ------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 10px; /* Base for rem units (1rem = 10px) */
+}
+
+body {
+    background: #1a1a2e; /* Deep blue-purple background */
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.6rem; /* 16px */
+    color: #e0e0e0; /* Light grey text for contrast */
+    overflow-x: hidden; /* Prevent horizontal scrollbars */
+    height: 100vh; /* Ensure body takes full viewport height */
+    display: flex;
+    flex-direction: column; /* Allow content to stack if needed */
+}
+
+ul {
+    list-style: none;
+}
+
+/* ------------------------------------- */
+/* Typography Helpers */
+/* ------------------------------------- */
+.lg-h-font {
+    font-size: 3.8rem;
+    font-weight: 700;
+}
+.h-font {
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+.p-font {
+    font-size: 1.6rem;
+    font-weight: 400;
+}
+.s-font {
+    font-size: 1.2rem;
+    color: #b0b0b0;
+}
+
+/* ------------------------------------- */
+/* Main Layout Container */
+/* ------------------------------------- */
+.main-container {
+    display: flex;
+    flex: 1; /* Allow it to grow and fill available space */
+    width: 100%;
+    position: relative;
+}
+
+/* ------------------------------------- */
+/* Sidebar (Burger Menu) Toggle Logic */
+/* ------------------------------------- */
+.caller-list-wrapper {
+    width: 30rem; /* Slightly smaller width */
+    background: #202040; /* Darker background for the sidebar */
+    border-right: 1px solid #303050; /* Subtle border */
+    height: 100%;
+    z-index: 2000; /* Higher z-index to overlay content */
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    box-sizing: border-box;
+    transition: transform 0.4s ease-in-out, box-shadow 0.4s ease;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+    transform: translateX(-100%); /* Hidden by default */
+    position: fixed; /* Fixed position for overlay effect */
+    left: 0;
+    top: 0;
+}
+
+.caller-list-wrapper.visible {
+    transform: translateX(0%); /* Show when visible class is added */
+}
+
+.caller-list-heading {
+    margin-bottom: 2rem;
+    color: #ffffff;
+    font-size: 2.8rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid #303050;
+    padding-bottom: 1rem;
+}
+
+.caller-list {
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.caller-list::-webkit-scrollbar {
+    display: none;
+}
+
+.caller-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    background: #2a2a4a;
+    margin-bottom: 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.7rem;
+    color: #e0e0e0;
+    transition: background 0.3s ease, transform 0.1s ease-out;
+    border: 1px solid transparent;
+}
+
+.caller-list > li:hover {
+    background: #393960;
+    transform: translateY(-2px);
+    border-color: #5d5d81;
+}
+
+.caller-list > li:last-child {
+    margin-bottom: 0;
+}
+
+.call-btn {
+    border: none;
+    background: #5d5d81;
+    color: #ffffff;
+    padding: 0.8rem 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, transform 0.1s ease-out;
+}
+
+.call-btn:hover {
+    background: #6e6ea0;
+    transform: scale(1.05);
+}
+
+.call-btn img {
+    width: 2rem;
+    height: 2rem;
+    filter: invert(1);
+}
+
+/* ------------------------------------- */
+/* Video Call Container Styling */
+/* ------------------------------------- */
+.video-call-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Adjusted to push controls to bottom */
+    padding: 2rem;
+    box-sizing: border-box;
+    background: #1a1a2e;
+    position: relative; /* For z-index of controls */
+    min-height: 100vh; /* Ensure it takes full height */
+}
+
+.username-input {
+    margin-bottom: 3rem;
+    display: flex;
+    gap: 1.5rem; /* Increased gap */
+    width: 100%;
+    max-width: 60rem; /* Increased max-width */
+    flex-shrink: 0;
+    padding: 0 1rem; /* Added horizontal padding */
+}
+
+.username-input input {
+    flex: 1;
+    height: 5.2rem; /* Slightly taller */
+    padding: 1.2rem 1.8rem; /* Increased padding */
+    outline: none;
+    border: 1px solid #4a4a7a;
+    background: #2a2a4a;
+    color: #ffffff;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    border-radius: 12px; /* More rounded */
+    font-size: 1.7rem; /* Slightly larger font */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.username-input input::placeholder {
+    color: #9090b0;
+}
+
+.username-input input:focus {
+    border-color: #6a6ad0;
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.3), 0 0 8px #6a6ad0; /* Stronger shadow */
+}
+
+.username-input button {
+    height: 5.2rem; /* Matches input height */
+    outline: none;
+    border: none;
+    background: #5d5d81;
+    color: white;
+    padding: 0 2.5rem; /* Increased padding */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1.2px; /* Increased letter spacing */
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 12px; /* More rounded */
+    transition: background 0.3s ease, transform 0.1s ease-out;
+    font-size: 1.7rem; /* Slightly larger font */
+}
+
+.username-input button:hover {
+    background: #6e6ea0;
+    transform: translateY(-2px); /* More pronounced lift */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.video-streams {
+    display: flex;
+    gap: 2.5rem; /* Increased gap */
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1300px; /* Increased max-width */
+    flex-grow: 1; /* Allow videos to take available space */
+    align-items: center;
+    margin-bottom: 2.5rem; /* Space before video controls */
+}
+
+.local-video,
+.remote-video {
+    flex-grow: 1;
+    flex-basis: 45%; /* Adjusted basis for better distribution */
+    min-width: 380px; /* Adjusted min-width */
+    max-width: 620px; /* Adjusted max-width */
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+    border: 3px solid #4a4a7a;
+    border-radius: 18px; /* More rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6); /* Stronger shadow */
+}
+
+.local-video video,
+.remote-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #000;
+}
+
+/* ------------------------------------- */
+/* Unified Call Management Bar */
+/* ------------------------------------- */
+.call-management-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the entire bar */
+    gap: 2rem; /* Adjusted gap between all control buttons */
+    width: 100%;
+    max-width: 80rem; /* Increased max-width to accommodate all buttons */
+    flex-shrink: 0;
+    padding: 1.5rem 2rem; /* Add some padding */
+    background: #2a2a4a; /* Add a subtle background to the bar itself */
+    border-radius: 18px; /* Rounded corners for the bar */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Add shadow for depth */
+    margin-top: 2rem; /* Space from video streams */
+    margin-bottom: 1rem; /* Space from bottom of container */
+}
+
+
+/* New Control Buttons (Video, Audio, Contacts) */
+.control-btn {
+    background: rgba(42, 42, 74, 0.8); /* Slightly transparent background */
+    border: none;
+    border-radius: 50%;
+    width: 5.5rem; /* Slightly smaller for a compact bar */
+    height: 5.5rem; /* Slightly smaller for a compact bar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn img {
+    width: 3rem; /* Adjusted icon size */
+    height: 3rem; /* Adjusted icon size */
+    filter: invert(1); /* Make icons white */
+}
+
+.control-btn:hover {
+    background: rgba(57, 57, 96, 0.9);
+    transform: translateY(-3px); /* More pronounced lift */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5); /* Stronger hover shadow */
+}
+
+.control-btn.active { /* For toggled states like mute/video off */
+    background: #dc3545; /* Red for inactive state */
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+}
+
+.control-btn.active:hover {
+    background: #e04a5a;
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.7);
+}
+
+/* End Call Button */
+.call-disconnect {
+    width: 7rem; /* Larger end call button */
+    height: 7rem;
+    background: #dc3545; /* Red disconnect button */
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.5); /* Red glowing shadow */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease, transform 0.1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
+    position: relative; /* For confetti */
+    overflow: hidden; /* Hide confetti overflow */
+}
+
+.call-disconnect:hover {
+    box-shadow: 0 0 25px rgba(220, 53, 69, 0.8); /* Stronger hover shadow */
+    transform: scale(1.08); /* More pronounced scale */
+}
+
+.call-disconnect img {
+    width: 3.8rem; /* Larger icon */
+    height: 3.8rem;
+    filter: invert(1);
+}
+
+/* ------------------------------------- */
+/* Pomodoro Timer UI */
+/* ------------------------------------- */
+.pomodoro-timer-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* Gap is handled by parent .call-management-bar */
+}
+
+.pomodoro-panel {
+    background: #2a2a4a;
+    padding: 1.8rem 2.5rem; /* Increased padding */
+    border-radius: 12px; /* More rounded */
+    display: flex;
+    flex-direction: column; /* Stack inputs and buttons vertically */
+    align-items: center;
+    gap: 1.5rem; /* Gap between panel elements */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+    position: absolute; /* Position relative to .pomodoro-timer-section */
+    bottom: calc(100% + 1rem); /* Position above the bar, with some gap */
+    left: 50%;
+    transform: translateX(-50%) translateY(0); /* Center and initial position */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.3s ease-in-out;
+    pointer-events: none; /* Prevents interaction when hidden */
+    white-space: nowrap; /* Prevent wrapping of panel content */
+    border: 1px solid #4a4a7a; /* Subtle border */
+    z-index: 1000; /* Ensure panel is above other elements */
+}
+
+.pomodoro-panel.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-1rem); /* Animate upwards slightly */
+    pointer-events: all;
+}
+
+.pomodoro-panel input {
+    width: 100%; /* Take full width within panel */
+    max-width: 15rem; /* Max width for inputs */
+    height: 4.4rem; /* Slightly taller */
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    border: 1px solid #4a4a7a;
+    background: #393960;
+    color: #ffffff;
+    font-size: 1.6rem;
+    text-align: center;
+    outline: none;
+}
+
+.pomodoro-panel input::placeholder {
+    color: #a0a0c0;
+}
+
+.pomodoro-panel .timer-btn {
+    background: #5d5d81;
+    color: white;
+    border: none;
+    padding: 0.9rem 1.8rem; /* Increased padding */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.6rem;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.1s ease-out;
+    width: 100%; /* Full width within panel */
+}
+
+.pomodoro-panel .timer-btn:hover {
+    background: #6e6ea0;
+    transform: translateY(-2px);
+}
+
+.timer-display {
+    font-family: 'Roboto', sans-serif;
+    font-size: 3.2rem; /* Larger */
+    font-weight: 700;
+    color: #8aff8a; /* Bright green for timer */
+    margin-top: 1rem; /* Space from buttons */
+    margin-bottom: 0.5rem;
+}
+
+/* ------------------------------------- */
+/* Floating Pomodoro Box */
+/* ------------------------------------- */
+#pomodoro-box {
+    position: fixed;
+    top: 2rem; /* Adjust as needed */
+    right: 2rem; /* Adjust as needed */
+    background-color: #2a2a4a; /* Match other UI elements */
+    min-width: 140px;
+    padding: 1.2rem 1.8rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    color: #e0e0e0;
+    transition: all 0.3s ease-in-out;
+    z-index: 500; /* Ensure it's above general content but below confetti/sidebar */
+    display: none; /* Hidden by default, main.js will control visibility */
+}
+
+#pomodoro-box #pomodoro-label-box {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+#pomodoro-box #pomodoro-timer-box {
+    font-family: 'Roboto', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #8aff8a;
+}
+
+
+/* ------------------------------------- */
+/* Confetti Animation */
+/* ------------------------------------- */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 9999; /* Ensure it's on top of everything */
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ffeb3b; /* Yellow */
+    border-radius: 50%;
+    opacity: 0;
+    animation: confetti-fall 3s forwards;
+}
+
+.confetti:nth-child(2n) {
+    background-color: #4CAF50; /* Green */
+}
+.confetti:nth-child(3n) {
+    background-color: #2196F3; /* Blue */
+}
+.confetti:nth-child(4n) {
+    background-color: #E91E63; /* Pink */
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotateZ(0deg) scale(0);
+        opacity: 1;
+    }
+    10% {
+        transform: translateY(-50px) rotateZ(180deg) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotateZ(720deg) scale(0.5);
+        opacity: 0;
+    }
+}
+
+
+.d-none {
+    display: none !important;
+}
+
+/* ------------------------------------- */
+/* Responsive Layout for Small Screens */
+/* ------------------------------------- */
+@media (max-width: 768px) {
+    .caller-list-wrapper {
+        width: 100%; /* Full width sidebar on mobile */
+        max-width: 300px; /* Still have a max width to look decent */
+        border-right: none;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .video-call-container {
+        padding: 1.5rem;
+    }
+
+    .username-input {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .username-input input,
+    .username-input button {
+        width: 90%;
+        max-width: 40rem;
+    }
+
+    .video-streams {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        max-width: unset;
+    }
+
+    .local-video, .remote-video {
+        width: 95%;
+        min-width: unset;
+        max-width: none;
+        flex-basis: auto;
+    }
+
+    .call-management-bar {
+        flex-wrap: wrap; /* Allow controls to wrap on smaller screens */
+        gap: 1.5rem; /* Adjust gap for mobile */
+        max-width: 95%;
+        padding: 1rem;
+    }
+
+    .call-disconnect {
+        width: 6.5rem;
+        height: 6.5rem;
+    }
+
+    .call-disconnect img {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+    .control-btn {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    .control-btn img {
+        width: 2.8rem;
+        height: 2.8rem;
+    }
+
+    .pomodoro-panel {
+        flex-direction: column;
+        width: 90%; /* Take more width on small screens */
+        max-width: 250px; /* Adjusted max-width for panel on mobile */
+        left: 50%;
+        transform: translateX(-50%) translateY(-1rem);
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+    }
+    .pomodoro-panel.visible {
+        transform: translateX(-50%) translateY(-2rem);
+    }
+
+    .pomodoro-panel input {
+        width: 100%;
+        max-width: unset; /* Remove max-width on mobile inputs */
+    }
+    .pomodoro-panel .timer-btn {
+        width: 100%;
+    }
+    .timer-display {
+        margin-left: 0;
+        margin-top: 0.5rem; /* Adjusted spacing */
+    }
+}
+
+/* Focus time animation - glowing red */
+.focus-anim {
+    animation: pulseFocus 2s infinite;
+    background-color: #ff4d4d !important;
+    color: white !important;
+}
+
+@keyframes pulseFocus {
+    0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 77, 77, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+}
+
+/* Break time animation - glowing green */
+.break-anim {
+    animation: pulseBreak 2s infinite;
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+@keyframes pulseBreak {
+    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(40, 167, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+/* Existing #pomodoro-box style */
+#pomodoro-box {
+    /* Kept existing styles from your original CSS, added display: none */
+    background-color: #222;
+    min-width: 130px;
+    transition: all 0.3s ease-in-out;
+    display: none; /* Hidden by default, controlled by JS */
+}
