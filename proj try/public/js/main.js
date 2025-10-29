@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const localVideo = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
     const endCallBtn = document.getElementById("end-call-btn");
-    const socket = io();
+    const socket = io("https://peerfocus.onrender.com");
 
     // New Control Buttons
     const toggleVideoBtn = document.getElementById('toggle-video-btn');
