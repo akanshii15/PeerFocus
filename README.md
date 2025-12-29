@@ -1,67 +1,92 @@
-🎯 PeerFocus: Focused Collaboration with Synchronized Productivity
+# 🎯 PeerFocus: Synchronized Productivity through Intelligent Video Collaboration
 
-PeerFocus is a browser-based video conferencing application designed to promote deep focus and mindful collaboration. It combines real-time peer-to-peer video calling with a synchronized Pomodoro timer and intelligent microphone automation, helping users stay productive while working together without distractions.
+**PeerFocus** is a high-performance video conferencing tool designed specifically for "Body Doubling"—a productivity technique where working with another person increases focus. It bridges the gap between deep work and collaboration by automating the social "rules" of a study session.
 
-🌐 Live Demo: https://peerfocus.onrender.com
+🌐 **Live Demo**: [peerfocus.onrender.com](https://peerfocus.onrender.com)  
+🚀 **Creator**: [Akanshi Singh](https://github.com/akanshii15)
 
-🚀 Key Features
+---
 
-✅ 1:1 Real-Time Video Calling
-Built using WebRTC for secure, low-latency, peer-to-peer communication.
+## 💡 The Problem & The Solution
 
-⏱️ Synchronized Pomodoro Timer
-Keeps both participants aligned in shared focus and break cycles.
+**The Problem:** Standard video calls (Zoom/Meet) are distracting for deep work. Manual muting/unmuting during Pomodoro breaks is tedious and often leads to "hot mic" embarrassments or forgotten unmutes.
 
-🔇 Automatic Microphone Control
-Microphones are intelligently muted during focus sessions and automatically unmuted during breaks.
+**The PeerFocus Solution:**
+* **Automatic Social Etiquette:** The app automatically manages your microphone based on the Pomodoro cycle.
+* **Zero-Distraction Focus:** During Focus Time, mics are locked to ensure total silence.
+* **Instant Socializing:** During Breaks, hardware is "kicked" back to life for immediate interaction.
 
-👀 Live Presence & Status Indicators
-Displays real-time user availability and current timer phases.
+---
 
-✨ Modern, Animated UI
-Clean interface with smooth transitions and engaging call animations.
+## 🚀 Key Features
 
-🧠 Planned Enhancements
+### 📡 High-Performance WebRTC
+* **P2P Communication:** Direct media streaming using WebRTC for minimal latency.
+* **Robust NAT Traversal:** Integrated STUN/TURN relay servers to ensure connectivity across restrictive mobile networks (5G/LTE) and firewalls.
+* **Dynamic Track Management:** Uses `RTCRtpSender.replaceTrack()` for seamless mute/unmute transitions without dropping the peer connection.
 
-💬 In-Call Chat — Real-time text communication during sessions
+### ⏱️ Synchronized Pomodoro Engine
+* **State Sync:** Real-time synchronization of timers across peers via Socket.io.
+* **Intelligent Mic Control:** Automated hardware-level muting during "Focus" phases and "Nuclear Reset" re-acquisition of audio tracks during "Break" phases.
 
-👥 Group Video Calling — Support for multi-user focus rooms
+### 📱 Mobile-First Optimization
+* **Audio Wake-up:** Handles mobile browser "Auto-play" restrictions by forcing `AudioContext` resumes on user gestures.
+* **Responsive UI:** Fully optimized for Safari (iOS) and Chrome (Android) using `playsinline` video delivery.
 
-⏱️ Custom Pomodoro Durations — User-defined focus and break intervals
+---
 
-📈 Productivity Analytics — Session history and insights
+## 🛠️ Tech Stack & Architecture
 
-🎵 Break-Time Ambience — Optional music or visuals during breaks
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | HTML5, CSS3 (Animations), JavaScript (ES6+) |
+| **Real-time** | WebRTC (Media), Socket.io (Signaling/Sync) |
+| **Backend** | Node.js, Express.js |
+| **Infrastructure** | Render (Hosting), Coturn (STUN/TURN) |
 
-⚙️ Tech Stack & Architecture
 
-Frontend
 
-HTML5, CSS3 (responsive design & animations)
+---
 
-JavaScript (DOM manipulation & Web APIs)
+## 🧠 Technical Deep Dive: Challenges Overcome
 
-Real-Time Communication
+### 1. The "Silence" Bug (NAT Traversal)
+**Challenge:** Devices on different networks (Phone on 5G vs Laptop on Home Wi-Fi) could not establish a peer connection.  
+**Solution:** Implemented a TURN server relay configuration in the `RTCConfiguration` to allow media packets to bypass symmetric NAT firewalls that block direct P2P traffic.
 
-WebRTC — Media streaming between peers
+### 2. Mobile Audio Hardware Suspension
+**Challenge:** Mobile browsers (Safari/Chrome iOS) aggressively suspend audio hardware during long periods of silence (Study Phase).  
+**Solution:** Developed a "User Gesture" synchronization logic that re-engages the browser's `AudioContext` and triggers `.play()` on remote media elements when the break begins, bypassing auto-play restrictions.
 
-Socket.IO — Signaling, presence updates, and timer synchronization
+### 3. State-Based Track Management
+**Challenge:** Simple `track.enabled = false` often leaves the hardware "busy" or out of sync.  
+**Solution:** Implemented a system to find the specific `RTCRtpSender` and swap the hardware track for a `null` value during focus sessions, completely freeing the hardware while maintaining the WebRTC handshake.
 
-Backend
+---
 
-Node.js + Express.js
+## ⚙️ Installation & Local Setup
 
-Handles signaling, user connections, and shared timer events
+1. **Clone the repo:**
+   ```bash
+   git clone [https://github.com/akanshii15/peerfocus.git](https://github.com/akanshii15/peerfocus.git)
+   cd peerfocus
+2. **Install dependencies**
+   npm install
+3. **Run the server**
+   npm start
+4. **Local Testing**
+   Open http://localhost:9000. To test across devices locally, use ngrok:
+   ngrok http 9000
+   
+---
 
-Deployment
+## 🧠 Future Enhancements
+Integrated In-Call Chat — For real-time text-based collaboration.
+Group Video Conferencing — Expand beyond 1:1 sessions.
+Productivity Insights — Track session stats and work patterns.
+Break-Time Ambience — Add optional Lo-Fi music during breaks.
 
-Hosted on Render for reliable and scalable deployment
+---
 
-📌 Project Status
-
-✅ Core functionalities — video calling, synchronized Pomodoro timer, automatic mic mute/unmute, presence indicators, and UI transitions — are fully implemented and live.
-
-🙋‍♀️ Creator
-
-Made with ❤️ by Akanshi Singh
-
+## 🙋‍♀️ Creator
+Made with ❤️ by Akanshi Singh Feel free to reach out for collaborations or feedback!
