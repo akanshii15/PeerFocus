@@ -1,62 +1,67 @@
-# 🎯 PeerFocus: Focused Collaboration with Synchronized Productivity
+🎯 PeerFocus: Focused Collaboration with Synchronized Productivity
 
-**PeerFocus** is a browser-based video conferencing tool meticulously designed for deep, distraction-free work and collaborative productivity. It seamlessly integrates real-time video calling with a synchronized Pomodoro timer and intelligent, automatic microphone control to foster enhanced focus. Dynamic presence indicators provide real-time insights into session status, ensuring smoother and more mindful collaboration.
+PeerFocus is a browser-based video conferencing application designed to promote deep focus and mindful collaboration. It combines real-time peer-to-peer video calling with a synchronized Pomodoro timer and intelligent microphone automation, helping users stay productive while working together without distractions.
 
-🌐 **Live Demo**: [https://peerfocus.onrender.com](https://peerfocus.onrender.com)
+🌐 Live Demo: https://peerfocus.onrender.com
 
----
+🚀 Key Features
 
-## 🚀 Key Features
+✅ 1:1 Real-Time Video Calling
+Built using WebRTC for secure, low-latency, peer-to-peer communication.
 
-- ✅ **Seamless 1:1 Video Calling**  
-  Powered by WebRTC for secure, low-latency, peer-to-peer communication.
+⏱️ Synchronized Pomodoro Timer
+Keeps both participants aligned in shared focus and break cycles.
 
-- ⏱️ **Synchronized Pomodoro Timer**  
-  Enables shared focus cycles to promote collective productivity.
+🔇 Automatic Microphone Control
+Microphones are intelligently muted during focus sessions and automatically unmuted during breaks.
 
-- 🔇 **Intelligent Mic Control**  
-  Automatically mutes/unmutes microphones based on focus and break phases.
+👀 Live Presence & Status Indicators
+Displays real-time user availability and current timer phases.
 
-- 👀 **Live Presence & Status Indicators**  
-  Real-time visibility into user availability and timer phases.
+✨ Modern, Animated UI
+Clean interface with smooth transitions and engaging call animations.
 
-- ✨ **Dynamic & Animated UI**  
-  Modern interface with smooth transitions and interactive call animations.
+🧠 Planned Enhancements
 
----
+💬 In-Call Chat — Real-time text communication during sessions
 
-## 🧠 Future Enhancements
+👥 Group Video Calling — Support for multi-user focus rooms
 
-- 💬 **Integrated In-Call Chat** — For real-time text-based collaboration.  
-- 👥 **Group Video Conferencing** — Expand beyond 1:1 sessions.  
-- ⏱️ **Custom Pomodoro Durations** — Let users set their own focus/break intervals.  
-- 📈 **Productivity Insights** — Track session stats and work patterns.  
-- 🎵 **Break-Time Ambience** — Add optional music or visuals during breaks.
+⏱️ Custom Pomodoro Durations — User-defined focus and break intervals
 
----
+📈 Productivity Analytics — Session history and insights
 
-## ⚙️ Tech Stack & Architecture
+🎵 Break-Time Ambience — Optional music or visuals during breaks
 
-- **Frontend**: HTML5, CSS3 (responsive UI, animations), JavaScript (DOM, Web APIs)  
-- **Real-time Communication**:  
-  - **WebRTC** — For direct media stream between peers  
-  - **Socket.IO** — For signaling and timer synchronization  
-- **Backend**: Node.js + Express.js  
-  - Manages signaling, connections, and timer broadcasts  
-- **Deployment**: Render — for seamless, scalable hosting
+⚙️ Tech Stack & Architecture
 
----
+Frontend
 
-## 📌 Current Status
+HTML5, CSS3 (responsive design & animations)
 
-🛠️ *The auto mic mute/unmute sync is under refinement.*  
-✅ All other core functionalities — video calling, Pomodoro synchronization, UI transitions — are fully functional and live.
+JavaScript (DOM manipulation & Web APIs)
 
----
+Real-Time Communication
 
-## 🙋‍♀️ Creator
+WebRTC — Media streaming between peers
 
-Made with ❤️ by **[Akanshi Singh](https://github.com/akanshii15)**
+Socket.IO — Signaling, presence updates, and timer synchronization
 
----
+Backend
+
+Node.js + Express.js
+
+Handles signaling, user connections, and shared timer events
+
+Deployment
+
+Hosted on Render for reliable and scalable deployment
+
+📌 Project Status
+
+✅ Core functionalities — video calling, synchronized Pomodoro timer, automatic mic mute/unmute, presence indicators, and UI transitions — are fully implemented and live.
+
+🙋‍♀️ Creator
+
+Made with ❤️ by Akanshi Singh
 
