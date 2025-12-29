@@ -9,7 +9,7 @@
 ## 🎬 Live Demo Preview
 
 <p align="center">
-  <img src="assets/peerfocus-demo.gif" width="750" />
+  <img src="assets/peerfocus-demo.gif.gif" width="750" />
 </p>
 
 ---
