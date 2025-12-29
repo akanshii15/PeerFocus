@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const localVideo = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
     const endCallBtn = document.getElementById("end-call-btn");
-    const socket = io("https://peerfocus.onrender.com");
+    const socket = io();
 
     // New Control Buttons
     const toggleVideoBtn = document.getElementById('toggle-video-btn');
@@ -38,6 +38,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isVideoOn = true;
     let isAudioOn = true; // Initial state: audio is on
+    let isMicManuallyMuted = false; 
+
+function syncMicState() {
+    if (!localStream) return;
+    const audioTrack = localStream.getAudioTracks()[0];
+    if (!audioTrack) return;
+
+    // The logic: Only ON if it's break AND user didn't manually mute
+    const shouldBeEnabled = (currentPhase === 'break') && (!isMicManuallyMuted);
+    audioTrack.enabled = shouldBeEnabled;
+
+    // UI Updates
+    if (shouldBeEnabled) {
+        toggleAudioBtn.classList.remove('active');
+        toggleAudioBtn.querySelector('img').src = '/images/mic-on.png';
+    } else {
+        toggleAudioBtn.classList.add('active');
+        toggleAudioBtn.querySelector('img').src = '/images/mic-off.png';
+    }
+
+    console.log(`Mic state synced: ${shouldBeEnabled ? 'ON' : 'OFF'}`);
+}
 
     // --- Sidebar (Burger Menu) Toggle Logic ---
     if (showContactsBtn && callerListWrapper) {
@@ -290,6 +312,66 @@ document.addEventListener('DOMContentLoaded', () => {
         endCall();
     });
 
+    // Remote peer listens for phase change
+socket.on('timer-action-remote', async ({ currentPhase: remotePhase }) => {
+    console.log("Remote phase change received:", remotePhase);
+    
+    // Update our local tracking of the phase
+    currentPhase = remotePhase; 
+
+    if (currentPhase === 'study') {
+        // --- MUTE PHASE (Mandatory) ---
+        if (localAudioTrack) {
+            localAudioTrack.enabled = false;
+        }
+        toggleAudioBtn.classList.add('active');
+        toggleAudioBtn.querySelector('img').src = '/images/mic-off.png';
+        toggleAudioBtn.disabled = true; // Block manual unmuting during study
+        console.log("Study phase: Mic forced OFF.");
+
+    } else {
+        // --- BREAK PHASE (Conditional Reset) ---
+        // Allow the button to be clickable again
+        toggleAudioBtn.disabled = false;
+
+        // ONLY re-acquire hardware if the user hasn't manually muted themselves
+        if (!isMicManuallyMuted) {
+            console.log("Nuclear Reset: Re-acquiring microphone hardware...");
+            try {
+                const newStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const newTrack = newStream.getAudioTracks()[0];
+
+                if (peerConnection) {
+                    const audioSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
+                    if (audioSender) {
+                        await audioSender.replaceTrack(newTrack);
+                        console.log("SUCCESS: New hardware track injected.");
+                    }
+                }
+
+                if (localAudioTrack) localAudioTrack.stop();
+                localAudioTrack = newTrack;
+                localAudioTrack.enabled = true;
+
+                // UI: Show as ON
+                toggleAudioBtn.classList.remove('active');
+                toggleAudioBtn.querySelector('img').src = '/images/mic-on.png';
+
+                if (remoteVideo) {
+                    remoteVideo.play().catch(e => console.warn("Remote play error:", e));
+                }
+            } catch (err) {
+                console.error("Hardware reset failed:", err);
+            }
+        } else {
+            console.log("Break phase: Mic remains OFF due to manual mute.");
+            // UI: Keep showing as OFF
+            toggleAudioBtn.classList.add('active');
+            toggleAudioBtn.querySelector('img').src = '/images/mic-off.png';
+        }
+    }
+});
+
     // ✅ Function to start a call (initiator)
     const startCall = async (targetUser) => {
         console.log(`Attempting to call ${targetUser}`);
@@ -438,44 +520,61 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     toggleAudioBtn.addEventListener('click', async () => {
-        if (!localAudioTrack && localStream) { // Try to get track if it disappeared but stream is active
-            localAudioTrack = localStream.getAudioTracks()[0];
-        }
+    // 1. Safety Check: Ensure local track exists
+    if (!localAudioTrack && localStream) {
+        localAudioTrack = localStream.getAudioTracks()[0];
+    }
 
-        // Only allow manual toggle if timer is NOT running OR it's currently a 'break' phase
-        if (!isTimerRunning || currentPhase === 'break') {
-            if (localAudioTrack) {
-                isAudioOn = !isAudioOn;
-                localAudioTrack.enabled = isAudioOn; // Enable/disable the local track
+    // 2. Phase Check: Block unmuting during Focus/Study time
+    if (isTimerRunning && currentPhase === 'study') {
+        console.warn("Cannot manually unmute during Focus Time.");
+        alert("Microphone is locked during Focus Time.");
+        return;
+    }
 
-                // Update button UI
-                toggleAudioBtn.classList.toggle('active', !isAudioOn); // 'active' class means button is in the "off" state
-                toggleAudioBtn.querySelector('img').src = isAudioOn ? '/images/mic-on.png' : '/images/mic-off.png';
-                console.log(`Audio ${isAudioOn ? 'on' : 'off'} locally.`);
+    if (localAudioTrack) {
+        // Toggle State
+        isAudioOn = !isAudioOn;
+        localAudioTrack.enabled = isAudioOn;
+        
+        console.log(`Audio ${isAudioOn ? 'ON' : 'OFF'} locally.`);
 
-                // Important: Update the track being sent to the remote peer
-                if (peerConnection && peerConnection.connectionState === 'connected') {
-                    const audioSender = peerConnection.getSenders().find(sender => sender.track && sender.track.kind === 'audio');
-                    if (audioSender) {
-                        try {
-                            // Replace the track with null if muting, or the actual track if unmuting
-                            await audioSender.replaceTrack(isAudioOn ? localAudioTrack : null);
-                            console.log('Audio track replaced successfully for remote peer.');
-                        } catch (e) {
-                            console.error('Error replacing audio track for remote peer:', e);
-                        }
-                    } else {
-                        console.warn("No audio sender found to replace track.");
+        // 3. Sync with Remote Peer
+        if (peerConnection) {
+            // ROBUST FIND: Looks for the audio slot even if the track was previously null
+            const audioSender = peerConnection.getSenders().find(s => 
+                (s.track && s.track.kind === 'audio') || 
+                (!s.track && s.getParameters().encodings.length > 0)
+            );
+
+            if (audioSender) {
+                try {
+                    // Inject track if unmuting, inject null if muting
+                    await audioSender.replaceTrack(isAudioOn ? localAudioTrack : null);
+                    console.log('Audio track synced with remote peer.');
+
+                    // MOBILE FIX: If turning audio ON, force the remote video to play
+                    if (isAudioOn && remoteVideo) {
+                        remoteVideo.muted = false;
+                        remoteVideo.volume = 1.0;
+                        await remoteVideo.play().catch(e => console.log("Remote play triggered"));
                     }
+                } catch (e) {
+                    console.error('Error syncing audio track:', e);
                 }
+            } else {
+                console.error("Critical: Audio sender (pipe) not found in connection.");
             }
-        } else {
-            // If timer is running and it's 'study' phase, prevent manual unmute
-            console.warn("Cannot manually unmute microphone during Focus Time.");
-            alert("Microphone is automatically muted during Focus Time. Please wait for the break or reset the timer.");
         }
-    });
 
+        // 4. Update UI
+        toggleAudioBtn.classList.toggle('active', !isAudioOn);
+        const img = toggleAudioBtn.querySelector('img');
+        if (img) {
+            img.src = isAudioOn ? '/images/mic-on.png' : '/images/mic-off.png';
+        }
+    }
+});
     // --- Pomodoro Timer Logic ---
     let timerInterval;
     let timeLeft = 0;
@@ -519,56 +618,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     async function applyMicControlForPomodoro() {
-        if (!localAudioTrack && localStream) {
-            localAudioTrack = localStream.getAudioTracks()[0]; // Re-get track if somehow lost
-        }
-        if (!localAudioTrack) {
-            console.warn("No local audio track to control for Pomodoro.");
-            return;
-        }
+    if (!localAudioTrack && localStream) {
+        localAudioTrack = localStream.getAudioTracks()[0];
+    }
+    if (!localAudioTrack) return;
 
-        const audioSender = peerConnection ? peerConnection.getSenders().find(sender => sender.track && sender.track.kind === 'audio') : null;
+    // Use a global or scoped peerConnection check
+// Replace your existing find logic with this:
+const audioSender = peerConnection.getSenders().find(s => {
+    // Search by current track kind OR by the parameters of the sender slot
+    return (s.track && s.track.kind === 'audio') || 
+           (s.getParameters().encodings.length > 0 && s.track === null);
+});
+    if (currentPhase === 'study') {
+        // --- FOCUS TIME: MUTE ---
+        // We set enabled to false. DO NOT use replaceTrack(null).
+        localAudioTrack.enabled = false;
+        isAudioOn = false;
+        
+        toggleAudioBtn.classList.add('active');
+        toggleAudioBtn.querySelector('img').src = '/images/mic-off.png';
+        toggleAudioBtn.disabled = true;
+        toggleAudioBtn.style.cursor = 'not-allowed';
+        
+        console.log("Mic muted (sending silence) for focus time.");
+    } else {
+        // --- BREAK TIME: UNMUTE ---
+        localAudioTrack.enabled = true;
+        isAudioOn = true;
+        
+        toggleAudioBtn.classList.remove('active');
+        toggleAudioBtn.querySelector('img').src = '/images/mic-on.png';
+        toggleAudioBtn.disabled = false;
+        toggleAudioBtn.style.cursor = 'pointer';
 
-        if (currentPhase === 'study') {
-            if (localAudioTrack.enabled) { // Only change if it's currently on
-                localAudioTrack.enabled = false;
-                isAudioOn = false; // Update global state
-                toggleAudioBtn.classList.add('active'); // Indicate mic is off
-                toggleAudioBtn.querySelector('img').src = '/images/mic-off.png';
-                toggleAudioBtn.disabled = true; // DISABLE THE BUTTON FOR STUDY TIME
-                toggleAudioBtn.style.cursor = 'not-allowed'; // Visual cue
-                console.log("Mic muted for Focus Time.");
+        console.log("Mic unmuted for break time.");
 
-                if (audioSender) {
-                    try {
-                        await audioSender.replaceTrack(null); // Stop sending audio
-                        console.log('Audio track replaced with null for remote peer (muted).');
-                    } catch (e) {
-                        console.error('Error replacing audio track for remote peer (mute):', e);
-                    }
-                }
-            }
-        } else { // currentPhase === 'break'
-            if (!localAudioTrack.enabled) { // Only change if it's currently off
-                localAudioTrack.enabled = true;
-                isAudioOn = true; // Update global state
-                toggleAudioBtn.classList.remove('active'); // Indicate mic is on
-                toggleAudioBtn.querySelector('img').src = '/images/mic-on.png';
-                toggleAudioBtn.disabled = false; // ENABLE THE BUTTON FOR BREAK TIME
-                toggleAudioBtn.style.cursor = 'pointer'; // Visual cue
-                console.log("Mic enabled for Break Time.");
-
-                if (audioSender) {
-                    try {
-                        await audioSender.replaceTrack(localAudioTrack); // Start sending audio again
-                        console.log('Audio track replaced with active track for remote peer (unmuted).');
-                    } catch (e) {
-                        console.error('Error replacing audio track for remote peer (unmute):', e);
-                    }
-                }
-            }
+        // KICKSTART REMOTE AUDIO
+        // If the remote audio got stuck due to silence, we play it again
+        if (remoteVideo) {
+            remoteVideo.play().catch(e => console.log("Remote play triggered on break"));
         }
     }
+
+    // Notify remote peer about phase change
+    if (caller.length === 2) {
+        const currentUser = usernameInput.value.trim();
+        const otherUser = caller.find(u => u !== currentUser);
+        
+        socket.emit('timer-action', {
+            type: 'phase-change',
+            currentPhase,
+            from: currentUser,
+            to: otherUser
+        });
+    }
+}
+
 
 
     function startTimerLogic() {
